@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080, initial-scale=1.0, user-scalable=no">
+<title>M-Box</title>
+<link rel="stylesheet" href="css/style.css">
+<!-- Samsung WebAPIs (AVPlay for Dolby passthrough). Resolved by the TV runtime; 404s harmlessly in a desktop browser. -->
+<script type="text/javascript" src="$WEBAPIS/webapis/webapis.js"></script>
+</head>
+<body>
+
+  <!-- Full-screen visualizer canvas sits behind everything -->
+  <canvas id="visCanvas" class="screen-hidden"></canvas>
+  <div id="volOsd" class="vol-osd"><div class="vol-bar"><div id="volFill" class="vol-fill"></div></div><div id="volNum" class="vol-num"></div><div class="vol-name">TV volume</div></div>
+
+  <div id="libraryScreen" class="screen library-screen">
+    <div class="library-header">
+      <h1 class="library-title">Library</h1>
+      <div id="libraryTabs" class="library-tabs">
+        <div class="library-tab active" data-tab="tracks" data-focusable="tab-tracks">Tracks</div>
+        <div class="library-tab" data-tab="albums" data-focusable="tab-albums">Albums</div>
+        <div class="library-tab" data-tab="artists" data-focusable="tab-artists">Artists</div>
+        <div class="library-tab" data-tab="folders" data-focusable="tab-folders">Folders</div>
+      </div>
+    </div>
+
+    <div id="libraryStatus" class="library-status">Scanning your media&hellip;</div>
+    <div id="libraryList" class="library-list"></div>
+
+    <div id="libraryMiniPlayer" class="library-mini-player screen-hidden">
+      <div class="library-mini-text">
+        <div id="libraryMiniTitle" class="library-mini-title"></div>
+        <div id="libraryMiniArtist" class="library-mini-artist"></div>
+      </div>
+    </div>
+
+    <div class="hint-row hint-row--library">
+      <span>&larr; &rarr; switch tab</span>
+      <span>&uarr; &darr; browse</span>
+      <span>Enter play</span>
+    </div>
+  </div>
+
+  <div id="nowPlaying" class="screen screen-hidden">
+
+    <!-- calm "Ambient Cover" screen: big drifting cover + blurred copy (ambientView.js) -->
+    <div id="ambient" class="ambient"></div>
+
+    <!-- top-left label showing which visualizer is active -->
+    <div id="visLabel" class="vis-label">Circular Spectrum</div>
+    <div id="bufferingIndicator" class="buffering-indicator screen-hidden">Buffering&hellip;</div>
+    <div id="connectionLostBanner" class="connection-lost-banner screen-hidden">Lost connection to phone &mdash; retrying&hellip;</div>
+    <div id="playbackError" class="connection-lost-banner screen-hidden"></div>
+    <div id="dolbyHint" class="dolby-hint screen-hidden">
+      <strong>For Dolby Atmos on your soundbar:</strong>
+      TV Settings &rsaquo; Sound &rsaquo; Expert Settings &rsaquo; Digital Output Audio Format = Auto or Pass-Through,
+      and Dolby Atmos Compatibility = On.
+    </div>
+
+    <div class="stage">
+      <div id="vinyl" class="vinyl">
+        <div class="vinyl-grooves"></div>
+        <div class="vinyl-label">
+          <img id="albumArt" class="album-art" alt="">
+          <svg id="vinylDefaultIcon" viewBox="0 0 24 24" width="42" height="42">
+            <path fill="#0b0b0d" d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- lyrics on the TV (lyricsView.js) -->
+    <div id="lyricsPanel" class="lyrics-panel"><div id="lyricsList" class="lyrics-list"></div><div id="lyricsMsg" class="lyrics-msg"></div></div>
+
+    <div class="track-info">
+      <img id="ambThumb" class="amb-thumb" alt="">
+      <div id="trackTitle" class="track-title">Sample Track</div>
+      <div id="trackArtist" class="track-artist">Demo Artist &middot; M-Box Sampler</div>
+      <div id="trackFormat" class="track-format screen-hidden"></div>
+    </div>
+
+    <div class="progress-row">
+      <span id="timeElapsed" class="time">0:00</span>
+      <div class="progress-track">
+        <div id="progressFill" class="progress-fill"></div>
+        <div id="progressHandle" class="progress-handle" tabindex="0" data-focusable="seek"></div>
+      </div>
+      <span id="timeTotal" class="time">0:00</span>
+    </div>
+
+    <div class="transport-row">
+      <button class="transport-btn" id="btnShuffle" data-focusable="shuffle" tabindex="0">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M17 3l4 4-4 4V8h-3.5c-.9 0-1.7.5-2.2 1.3L9.6 12l1.7 2.7c.5.8 1.3 1.3 2.2 1.3H17v-3l4 4-4 4v-3h-3.5c-1.7 0-3.3-.9-4.2-2.4L7.8 15H3v-2h4.8l1.5-2.3C10.2 9.2 11.8 8.3 13.5 8.3H17V3z"/></svg>
+      </button>
+      <button class="transport-btn" id="btnPrev" data-focusable="prev" tabindex="0">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+      <button class="transport-btn transport-btn--main" id="btnPlay" data-focusable="play" tabindex="0">
+        <svg id="iconPlay" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+        <svg id="iconPause" viewBox="0 0 24 24" style="display:none"><path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+      </button>
+      <button class="transport-btn" id="btnNext" data-focusable="next" tabindex="0">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M6 18l8.5-6L6 6zM16 6h2v12h-2z"/></svg>
+      </button>
+      <button class="transport-btn" id="btnRepeat" data-focusable="repeat" tabindex="0">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+      </button>
+      <button class="transport-btn" id="btnLyrics" data-focusable="lyrics" tabindex="0" title="Lyrics">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h11v2H4zm0 4h11v2H4zm0 4h7v2H4zm14.5-8a2.5 2.5 0 0 1 2.5 2.5V17a3 3 0 1 1-2-2.83V5z"/></svg>
+      </button>
+    </div>
+
+    <div class="hint-row">
+      <span>&larr; &rarr; navigate</span>
+      <span>&uarr; &darr; move row</span>
+      <span>Enter select</span>
+      <span>Rewind/FF seeks anywhere</span>
+    </div>
+  </div>
+
+  <!-- Visualizer switcher overlay, opened with Up -->
+  <div id="visSwitcher" class="vis-switcher hidden">
+    <div class="vis-switcher-title">Visualizer</div>
+    <div id="visList" class="vis-list"></div>
+  </div>
+
+  <audio id="audioEl" crossorigin="anonymous"></audio>
+  <!-- Samsung AVPlay surface (audio only; kept effectively invisible) -->
+  <object id="av-player" type="application/avplayer" style="position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;"></object>
+
+  <!-- TEMPORARY debug readout — shows real key events as they arrive, to
+       diagnose why D-pad navigation isn't responding. Remove once fixed. -->
+
+
+  <script src="js/debugLog.js"></script>
+  <script src="js/fitScreen.js"></script>
+
+  <script src="js/audioEngine.js"></script>
+  <script src="js/mediaLibrary.js"></script>
+  <!-- Visualizers: same order as the phone app's visualizer list -->
+  <script src="js/visualizers/_visUtil.js"></script>
+  <script src="js/visualizers/_videoBackdrop.js"></script>
+  <script src="js/visualizers/normalOff.js"></script>
+  <script src="js/visualizers/circularSpectrum.js"></script>
+  <script src="js/visualizers/orbitingStardust.js"></script>
+  <script src="js/visualizers/acousticRipples.js"></script>
+  <script src="js/visualizers/vinylGrooveBleed.js"></script>
+  <script src="js/visualizers/auroraBorealis.js"></script>
+  <script src="js/visualizers/oledEdgeLighting.js"></script>
+  <script src="js/visualizers/cinematicLightLeaks.js"></script>
+  <script src="js/visualizers/analogGlitchBurn.js"></script>
+  <script src="js/visualizers/anamorphicLensFlare.js"></script>
+  <script src="js/visualizers/quantumParticleGrid.js"></script>
+  <script src="js/visualizers/liquidSpline.js"></script>
+  <script src="js/visualizers/hexagonalAudioGrid.js"></script>
+  <script src="js/visualizers/bottomGlassBars.js"></script>
+  <script src="js/visualizers/classicSymmetrical.js"></script>
+  <script src="js/visualizers/spectrumDots.js"></script>
+  <script src="js/visualizers/narrowBars.js"></script>
+  <script src="js/visualizers/plainOscilloscope.js"></script>
+  <script src="js/visualizers/ambientCover.js"></script>
+  <script src="js/flac-decoder.min.js" charset="UTF-8"></script>
+  <script src="js/tvAnalysis.js"></script>
+  <script src="js/visualizerManager.js"></script>
+  <script src="js/fileProbe.js"></script>
+  <script src="js/preflight.js"></script>
+  <script src="js/playerBackend.js"></script>
+  <script src="js/scratch.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/library.js"></script>
+  <script src="js/screenManager.js"></script>
+  <script src="js/remote.js"></script>
+  <script src="js/ambientView.js"></script>
+  <script src="js/lyricsView.js"></script>
+  <script src="js/tvVolume.js"></script>
+  <script src="js/bridgeShared.js"></script>
+  <script src="js/phoneDiscovery.js"></script>
+  <script src="js/remoteBridge.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

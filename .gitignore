@@ -1,0 +1,17 @@
+# Tizen build / signing output (never commit certificates or signed packages)
+*.wgt
+*.p12
+author-signature.xml
+signature*.xml
+.sign/
+.buildResult/
+.manifest.tmp
+# Tizen Studio / IDE
+.settings/
+.metadata/
+*.log
+.DS_Store
+Thumbs.db
+.tizen-rds/
+Debug/
+Release/

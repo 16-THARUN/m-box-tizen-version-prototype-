@@ -1,0 +1,111 @@
+# Project type [web_app, test_runner]
+project_type: web_app
+
+# Default profile, Tizen API version
+profile: tv
+api_version: "4.0"
+
+# Build type [Debug/ Release/ Test]
+build_type: Debug
+
+# Output name for application
+output_name: MBox
+
+# Output path for build
+output_path: ""
+
+# Enable size optimization of wgt for web workspace
+opt: false
+
+# Signing profile to be used for Tizen package signing
+# If value is empty: "", active signing profile will be used
+# Else If value is ".", default signing profile will be used
+signing_profile: ""
+
+# list of certs in web project (.trust-anchor)
+trust_anchor: []
+
+# list of files in web project (.html,.css etc) and resources
+files:
+  - css/style.css
+  - images/icon.png
+  - index.html
+  - js/ambientView.js
+  - js/app.js
+  - js/audioEngine.js
+  - js/bridgeShared.js
+  - js/debugLog.js
+  - js/fileProbe.js
+  - js/fitScreen.js
+  - js/flac-decoder.LICENSE.txt
+  - js/flac-decoder.min.js
+  - js/library.js
+  - js/lyricsView.js
+  - js/mediaLibrary.js
+  - js/phoneDiscovery.js
+  - js/player.js
+  - js/playerBackend.js
+  - js/preflight.js
+  - js/remote.js
+  - js/remoteBridge.js
+  - js/scratch.js
+  - js/screenManager.js
+  - js/tvAnalysis.js
+  - js/tvVolume.js
+  - js/visualizerManager.js
+  - js/visualizers/_videoBackdrop.js
+  - js/visualizers/_visUtil.js
+  - js/visualizers/acousticRipples.js
+  - js/visualizers/ambientCover.js
+  - js/visualizers/analogGlitchBurn.js
+  - js/visualizers/anamorphicLensFlare.js
+  - js/visualizers/auroraBorealis.js
+  - js/visualizers/bottomGlassBars.js
+  - js/visualizers/cinematicLightLeaks.js
+  - js/visualizers/circularSpectrum.js
+  - js/visualizers/classicSymmetrical.js
+  - js/visualizers/hexagonalAudioGrid.js
+  - js/visualizers/liquidSpline.js
+  - js/visualizers/narrowBars.js
+  - js/visualizers/normalOff.js
+  - js/visualizers/oledEdgeLighting.js
+  - js/visualizers/orbitingStardust.js
+  - js/visualizers/plainOscilloscope.js
+  - js/visualizers/quantumParticleGrid.js
+  - js/visualizers/spectrumDots.js
+  - js/visualizers/vinylGrooveBleed.js
+  - videos/glitch_burn.bin
+  - videos/glitch_burn.json
+  - videos/lens_flare.bin
+  - videos/lens_flare.json
+  - videos/particle_grid.bin
+  - videos/particle_grid.json
+
+# list of files to exclude based on the matched patterns
+excludes:
+  - Build/*
+  - Debug/*
+  - Directory.Build.targets
+  - Release/*
+  - Test/*
+  - \.Build/.*
+  - \.buildResult/.*
+  - \.csproj
+  - \.externalToolBuilders/.*
+  - \.gn
+  - \.obj/.*
+  - \.package/.*
+  - \.project
+  - \.rds_delta
+  - \.sdk_delta.info
+  - \.settings/.*
+  - \.sign/.*
+  - \.tizen-ui-builder-tool.xml
+  - \.tproject
+  - \.wgt
+  - tizen_web_project.yaml
+  - webUnitTest/*
+
+# project dependencies
+deps: []
+

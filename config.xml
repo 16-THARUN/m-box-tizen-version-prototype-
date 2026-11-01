@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="https://github.com/mbox/mboxtv" version="1.0.0" viewmodes="maximized">
+   <access origin="*" subdomains="true"></access>
+   <name>M-Box</name>
+   <icon src="images/icon.png"></icon>
+   <content src="index.html"></content>
+   <feature name="http://tizen.org/feature/screen.size.all"></feature>
+   <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"></tizen:setting>
+   <tizen:application id="MBoxTVApp1.MBox" package="MBoxTVApp1" required_version="4.0"></tizen:application>
+   <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"></tizen:privilege>
+   <tizen:privilege name="http://tizen.org/privilege/mediastorage"></tizen:privilege>
+   <tizen:privilege name="http://tizen.org/privilege/externalstorage"></tizen:privilege>
+   <tizen:privilege name="http://tizen.org/privilege/content.read"></tizen:privilege>
+   <tizen:privilege name="http://tizen.org/privilege/filesystem.read"></tizen:privilege>
+   <tizen:privilege name="http://tizen.org/privilege/filesystem.write"></tizen:privilege>
+   <tizen:privilege name="http://tizen.org/privilege/internet"></tizen:privilege>
+   <tizen:privilege name="http://developer.samsung.com/privilege/productinfo"></tizen:privilege>
+   <tizen:privilege name="http://tizen.org/privilege/tv.audio"></tizen:privilege>
+   <tizen:privilege name="http://tizen.org/privilege/display"></tizen:privilege>
+   <tizen:privilege name="http://tizen.org/privilege/application.launch"></tizen:privilege>
+   <tizen:allow-navigation>*</tizen:allow-navigation>
+   <tizen:profile name="tv"></tizen:profile>
+</widget>
